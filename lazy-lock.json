@@ -1,0 +1,11 @@
+{
+  "dashboard-nvim": { "branch": "master", "commit": "fabf5feec96185817c732d47d363f34034212685" },
+  "lazy.nvim": { "branch": "main", "commit": "460e1cd8f24e364d54543a4b0e83f6f4ec1f65fb" },
+  "lualine.nvim": { "branch": "master", "commit": "b431d228b7bbcdaea818bdc3e25b8cdbe861f056" },
+  "nvim-autopairs": { "branch": "master", "commit": "f158dcb865c36f72c92358f87787dab2c272eaf3" },
+  "nvim-tree.lua": { "branch": "master", "commit": "e7cdecc6363acef8232f2f099fe21096ffdc071f" },
+  "nvim-treesitter": { "branch": "master", "commit": "f027762845fa35ff27fe0487c86537a74a480a0c" },
+  "nvim-web-devicons": { "branch": "master", "commit": "26220156aafb198b2de6a4cf80c1b120a3768da0" },
+  "onedarkpro.nvim": { "branch": "main", "commit": "ada0798b1bf6d0bde1fbf239c22de778bf5efbd1" },
+  "rainbow-delimiters.nvim": { "branch": "master", "commit": "d227e6c9879bb50af35cd733461198666981d482" }
+}
