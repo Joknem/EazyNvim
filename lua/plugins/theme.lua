@@ -10,13 +10,30 @@ return {
   --   }
   -- end,
   --
+  --
   -- -- optionally set the colorscheme within lazy config
   -- init = function()
   --   vim.cmd("colorscheme poimandres")
   -- end
+  --
+  -- 'ribru17/bamboo.nvim',
+  -- lazy = false,
+  -- priority = 1000,
+  -- config = function()
+  --   require('bamboo').setup {
+  --     -- optional configuration here
+  --   }
+  --   require('bamboo').load()
+  -- end,
+  --
+  --
+  --
+  --
   "rose-pine/neovim", 
   name = "rose-pine",
   init = function()
-      vim.cmd('colorscheme rose-pine-main')
+      vim.cmd('colorscheme rose-pine-dawn')
   end
+  --
+  --
 }
