@@ -3,7 +3,7 @@ return {
     run = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensured_installed = { "lua", "vim", "c", "cpp", "make", "markdown", "python", "verilog", "json" },
+        ensured_installed = { "lua", "vim", "c", "cpp", "make", "markdown", "python", "verilog", "json", "html", "markdown_inline", "markdown" },
         sync_install = false,
         auto_install = true,
         highlight = {
