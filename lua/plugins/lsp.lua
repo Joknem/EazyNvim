@@ -8,7 +8,12 @@ return {
     },
     config = function()
       local servers = {
-        clangd = {},
+        clangd = {
+            cmd = {
+                "clangd"
+            },
+            filetypes = {"c", "cpp"}
+        },
         pyright = {},
       }
       local on_attach = function(_, bufnr)
@@ -18,10 +23,11 @@ return {
           end
           vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
         end
+        nmap("gd", vim.lsp.buf.definition, "Open definition")
         nmap("<leader>mm", "<cmd>Lspsaga term_toggle<CR>", "Open terminal")
         nmap('gpd', '<cmd>Lspsaga peek_definition<CR>', 'Peek Definition')
         nmap('gpr', '<cmd>Telescope lsp_references<CR>', 'Peek References')
-        nmap('<s-k>', '<cmd>Lspsaga hover_doc<CR>', 'Hover Documentation')
+        nmap('K', '<cmd>Lspsaga hover_doc<CR>', 'Hover Documentation')
         nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, 'Workspace Add Folder')
         nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Workspace Remove Folder')
         nmap('<leader>wl', function()
@@ -168,10 +174,6 @@ return {
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
-            elseif require("copilot.suggestion").is_visible() then
-              require("copilot.suggestion").accept()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
             elseif has_words_before() then
               cmp.complete()
             else
@@ -189,6 +191,7 @@ return {
             end
           end, { 'i', 's' }),
           ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ['C-e'] = cmp.mapping.close()
         }),
         experimental = {
           ghost_text = true,
@@ -204,7 +207,7 @@ return {
             doc_lines = 0,
             floating_window = true,
             hint_enable = true,
-            hint_prefix = "🐼  ",
+            hint_prefix = "🐼 ",
             hi_parameter = "LspSignatureActiveParameter",
             max_height = 12,
             max_width = 80,
