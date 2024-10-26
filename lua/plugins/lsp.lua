@@ -140,10 +140,10 @@ return {
       cmp.setup({
         window = {
           completion = {
+            winhighlight = 'normal:pmenu,floatborder:pmenu,search:none',
             col_offset = -3,
             side_padding = 0,
             border = 'rounded',
-            winhighlight = "Normal:Normal,FloatBorder:Normal,CursorLine:MyCmpSel",
             scrollbar = true,
           },
           documentation = {
@@ -152,9 +152,15 @@ return {
             scrollbar = true,
           },
         },
+        sources = cmp.config.sources({
+          { name = 'copilot',  priority = 100 },
+          { name = 'nvim_lsp', priority = 100 },
+          { name = 'nvim_lua', priority = 100 },
+          { name = 'path',     priority = 100 },
+          { name = 'buffer',   priority = 100 },
+        }),
         formatting = {
           fields = { 'kind', 'abbr', 'menu' },
-          expandable_indicator = false,
           format = function(entry, vim_item)
             local kind = require('lspkind').cmp_format({ mode = 'symbol_text', maxwidth = 50 })(entry, vim_item)
             local strings = vim.split(kind.kind, '%s', { trimempty = true })
@@ -163,24 +169,23 @@ return {
             return kind
           end,
         },
-        sources = cmp.config.sources({
-          { name = 'copilot',  priority = 100 },
-          { name = 'nvim_lsp', priority = 100 },
-          { name = 'nvim_lua', priority = 100 },
-          { name = 'path',     priority = 100 },
-          { name = 'buffer',   priority = 100 },
-        }),
+        snippet = {
+          expand = function(args)
+            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+          end,
+        },
         mapping = cmp.mapping.preset.insert({
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jumpable()
             elseif has_words_before() then
               cmp.complete()
             else
               fallback()
             end
           end, { 'i', 's' }),
-
           ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
@@ -204,16 +209,22 @@ return {
     config = function()
         require('lsp_signature').setup{
             bind = true,
-            doc_lines = 0,
+            doc_lines = 10,
+            wrap = true,
             floating_window = true,
             hint_enable = true,
             hint_prefix = "🐼 ",
+            hint_scheme = "String",
+            hint_inline = function() return false end, -- should the hint be inline(nvim 0.10 only)?  default false
             hi_parameter = "LspSignatureActiveParameter",
-            max_height = 12,
-            max_width = 80,
             handler_opts = {
                 border = "single",
             },
+            always_triggrt = false,
+            auto_close_after = nil,
+            close_timeout = 200,
+            max_height = 12,
+            max_width = 80,
             zindex = 200,
             padding = "",
             debug = false,
