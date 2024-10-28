@@ -20,7 +20,7 @@ return {
           vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
         end
 
-        nmap("gd", vim.lsp.buf.definition, "Open definition")
+        nmap("gd", "<cmd>lua vim.lsp.buf.definition()<CR>", "Open definition")
         nmap("<leader>mm", "<cmd>Lspsaga term_toggle<CR>", "Open terminal")
         nmap('gpd', '<cmd>Lspsaga peek_definition<CR>', 'Peek Definition')
         nmap('gpr', '<cmd>Telescope lsp_references<CR>', 'Peek References')
