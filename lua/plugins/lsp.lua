@@ -5,6 +5,7 @@ return {
     dependencies = {
       'folke/neodev.nvim',
       'nvimdev/lspsaga.nvim',
+      'saghen/blink.nvim'
     },
     config = function()
       local servers = {
@@ -19,6 +20,11 @@ return {
           end
           vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
         end
+      local lspconfig = require('lspconfig')
+      for server, config in pairs(opts.servers) do
+        config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities)
+        lspconfig[server].setup(config)
+      end
 
         nmap("gd", "<cmd>lua vim.lsp.buf.definition()<CR>", "Open definition")
         nmap("<leader>mm", "<cmd>Lspsaga term_toggle<CR>", "Open terminal")
@@ -36,8 +42,6 @@ return {
         nmap('d[', vim.diagnostic.goto_prev, 'Diangostics Prev')
         nmap('d]', vim.diagnostic.goto_next, 'Diangostics Next')
       end
-
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
       require('neodev').setup({
         lspconfig = true,
@@ -80,7 +84,7 @@ return {
       for server, config in pairs(servers) do
         require('lspconfig')[server].setup(vim.tbl_deep_extend('keep', {
           on_attach = on_attach,
-          capabilities = capabilities,
+          capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities),
         }, config))
       end
 
@@ -102,106 +106,6 @@ return {
           }
           vim.diagnostic.open_float(nil, opts)
         end
-      })
-    end,
-  },
-  {
-    'hrsh7th/nvim-cmp',
-    lazy = true,
-    event = 'LspAttach',
-    dependencies = {
-      'hrsh7th/cmp-nvim-lsp',
-      {
-        'saadparwaiz1/cmp_luasnip',
-        dependencies = {
-          'L3MON4D3/LuaSnip',
-        },
-      },
-      'hrsh7th/cmp-nvim-lua',
-      'hrsh7th/cmp-buffer',
-      'hrsh7th/cmp-path',
-      'onsails/lspkind.nvim',
-      "zbirenbaum/copilot.lua",
-      "zbirenbaum/copilot-cmp",
-    },
-    config = function()
-      local has_words_before = function()
-        unpack = unpack or table.unpack
-        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-        return col ~= 0
-            and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
-      end
-      require('luasnip.loaders.from_snipmate').lazy_load()
-      local luasnip = require('luasnip')
-      local cmp = require('cmp')
-      cmp.setup({
-        window = {
-          completion = {
-            winhighlight = 'normal:pmenu,floatborder:pmenu,search:none',
-            col_offset = -3,
-            side_padding = 0,
-            border = 'rounded',
-            scrollbar = true,
-          },
-          documentation = {
-            winhighlight = 'normal:pmenu,floatborder:pmenu,search:none',
-            border = 'rounded',
-            scrollbar = true,
-          },
-        },
-        formatting = {
-          fields = { 'kind', 'abbr', 'menu' },
-          format = function(entry, vim_item)
-            local kind = require('lspkind').cmp_format({ mode = 'symbol_text', maxwidth = 50 })(entry, vim_item)
-            local strings = vim.split(kind.kind, '%s', { trimempty = true })
-            kind.kind = ' ' .. (strings[1] or '') .. ' '
-            kind.menu = ' ' .. (strings[2] or '')
-            return kind
-          end
-        },
-        snippet = {
-          expand = function(args)
-            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-          end,
-        },
-        sources = cmp.config.sources({
-          { name = "jupynium", priority = 1000 },
-          { name = 'copilot',  priority = 100 },
-          { name = 'luasnip',  priority = 100 },
-          { name = 'nvim_lsp', priority = 100 },
-          { name = 'nvim_lua', priority = 100 },
-          { name = 'path',     priority = 100 },
-          { name = 'buffer',   priority = 100 },
-        }),
-        mapping = cmp.mapping.preset.insert({
-          ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif require("copilot.suggestion").is_visible() then
-              require("copilot.suggestion").accept()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-
-          ['<S-Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-          ['<CR>'] = cmp.mapping.confirm({ select = false }),
-        }),
-        experimental = {
-          ghost_text = true,
-        },
       })
     end,
   },
